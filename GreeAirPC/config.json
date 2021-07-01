@@ -1,0 +1,36 @@
+{
+	"network": {
+		"broadcast" : [ "10.0.0.255" ]
+	},
+	
+	"blynk": {
+		"token": "*** your Blynk token ***",
+		"server-address": "10.0.0.3",
+		"server-port": "50000",
+		
+		"devices": [
+			""
+		],
+		
+		"pins": {
+			"device-selector": 100,
+			"set-mode": 99,
+			"get-temperature": 98,
+			"set-temperature": 97,
+			"set-fan-speed": 96,
+			"set-vertical-swing": 95,
+			"set-power": 94,
+			"set-turbo": 93,
+			"set-quiet": 92,
+			"set-sleep": 91,
+			"set-xfan": 90,
+			"set-health": 89,
+			"set-energy-saving": 88,
+			"set-light": 87,
+			"set-air": 86,
+			"switch-device": 85
+		}
+	},
+	
+	"skip-initial-scan": false
+}
