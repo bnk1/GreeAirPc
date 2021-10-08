@@ -10,36 +10,59 @@ namespace GreeAirPC
 {
     public static class MyGree
     {
-        public static Dictionary<string, string> CmdList = new Dictionary<string, string>
+        public static Dictionary<string, string> CmdToNameDic = new Dictionary<string, string>
         {
-            { "Pow",        "Power          "},
-            { "Mod",        "Mode           "},
-            { "SetTem",     "Set Temp       "},
-            { "WdSpd",      "Set Fan Speed  "},
-            { "Air",        "Air            "},
-            { "Blo",        "X-Fan          "},
-            { "Health",     "Health         "},
-            { "SwhSlp",     "Sleep          "},
-            { "Lig",        "Light          "},
-            { "SwUpDn",     "Swip Up Down   "},    // Vertical swing
-            { "Quiet",      "Quiet          "},
-            { "Tur",        "Turbo          "},
-            { "SvSt",       "Energy Saver   "},
-            { "TemUn",      "Temp Units C/F "}
+            { "Pow",        "Power"},
+            { "Tur",        "Turbo"},
+            { "SvSt",       "Energy Saver"},
+            { "Mod",        "Mode"},
+            { "WdSpd",      "Fan Speed"},
+            { "Air",        "External Air"},
+            { "Blo",        "X-Fan"},
+            { "Health",     "Health"},
+            { "SwhSlp",     "Sleep"},
+            { "Lig",        "Light"},
+            { "SwUpDn",     "Swip Up Down"},    // Vertical swing
+            { "SetTem",     "Temperature"},
+            { "Quiet",      "Quiet"},
+            { "TemUn",      "Temp Units C/F"}
+        };
+
+        public static Dictionary<string, string> NameToCmdDic = new Dictionary<string, string>
+        {
+            { "Power"          , "Pow"        },
+            { "Turbo"          , "Tur"        },
+            { "Energy Saver"   , "SvSt"       },
+            { "Mode"           , "Mod"        },
+            { "Fan Speed"      , "WdSpd"      },
+            { "External Air"   , "Air"        },
+            { "X-Fan"          , "Blo"        },
+            { "Health"         , "Health"     },
+            { "Sleep"          , "SwhSlp"     },
+            { "Light"          , "Lig"        },
+            { "Swip Up Down"   , "SwUpDn"     },    // Vertical swing
+            { "Temperature"    , "SetTem"     },
+            { "Quiet"          , "Quiet"      },
+            { "Temp Units C/F" , "TemUn"      }
         };
 
         public static AirCondModel GetDefault()
         {
+            if (string.IsNullOrEmpty(Settings.Default.ID) || (Settings.Default.ID == "ID") || string.IsNullOrEmpty(Settings.Default.IP))
+                throw new Exception("Null default");
+
             AirCondModel model = new AirCondModel(Settings.Default.ID, Settings.Default.Name, Settings.Default.PrivateKey, Settings.Default.IP);
 
             return model;
         }
 
 
-        public static async Task<List<AirCondModel>> DiscoverDevices()
+        public static async Task<List<AirCondModel>> DiscoverDevices(string netMask)
         {
             List<AirCondModel> foundUnits = new List<Database.AirCondModel>();
-            var results = await Gree.Scanner.Scan("10.0.0.255");
+
+            var results = await Gree.Scanner.Scan(netMask);
+
             foundUnits.AddRange(results);
 
             return foundUnits;

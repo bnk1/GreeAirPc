@@ -44,15 +44,13 @@ namespace GreeAirPC.Gree
         {
             this.log.LogDebug("Updating device status");
 
-            var columns = typeof(DeviceParameterKeys).GetFields()
-                .Where((f) => f.FieldType == typeof(string))
-                .Select((f) => f.GetValue(null) as string)
-                .ToList();
+            var columns = typeof(DeviceParameterKeys).GetFields().Where((f) => f.FieldType == typeof(string)).Select((f) => f.GetValue(null) as string).ToList();
 
             var pack = DeviceStatusRequestPack.Create(this.model.ID, columns);
             var json = JsonConvert.SerializeObject(pack);
 
             var encrypted = Crypto.EncryptData(json, this.model.PrivateKey);
+
             if (encrypted == null)
             {
                 this.log.LogWarning("Failed to encrypt DeviceStatusRequestPack");
@@ -74,6 +72,7 @@ namespace GreeAirPC.Gree
             }
 
             json = Crypto.DecryptData(response.Pack, this.model.PrivateKey);
+
             if (json == null)
             {
                 this.log.LogWarning("Failed to decrypt DeviceStatusResponsePack");
@@ -81,30 +80,22 @@ namespace GreeAirPC.Gree
             }
 
             var responsePack = JsonConvert.DeserializeObject<DeviceStatusResponsePack>(json);
+
             if (responsePack == null)
             {
                 this.log.LogWarning("Failed to deserialize DeviceStatusReponsePack");
                 return;
             }
 
-            var updatedParameters = responsePack.Columns
-                .Zip(responsePack.Values, (k, v) => new { k, v })
-                .ToDictionary(x => x.k, x => x.v);
+            var updatedParameters = responsePack.Columns.Zip(responsePack.Values, (k, v) => new { k, v }).ToDictionary(x => x.k, x => x.v);
 
-            bool parametersChanged = !this.Parameters.OrderBy(pair => pair.Key)
-                .SequenceEqual(updatedParameters.OrderBy(pair => pair.Key));
+            bool parametersChanged = !this.Parameters.OrderBy(pair => pair.Key).SequenceEqual(updatedParameters.OrderBy(pair => pair.Key));
 
             if (parametersChanged)
             {
                 this.log.LogDebug("Device parameters updated");
                 this.Parameters = updatedParameters;
-
-                this.DeviceStatusChanged?.Invoke(
-                    this, 
-                    new DeviceStatusChangedEventArgs()
-                    {
-                        Parameters = updatedParameters
-                    });
+                this.DeviceStatusChanged?.Invoke(this, new DeviceStatusChangedEventArgs() { Parameters = updatedParameters });
             }
         }
 

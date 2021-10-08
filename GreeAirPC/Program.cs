@@ -13,12 +13,15 @@ namespace GreeAirPC
 {
     static class Program
     {
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        private static extern bool AllocConsole();
+
         [STAThread]
         static void Main(string[] args)
         {
             if (args.Length > 0) //then we have command line args
             {
-                GreeCmd.RunCmdAsync(args);
+                GreeCmd.RunCmd(args);
             }
             else
             {

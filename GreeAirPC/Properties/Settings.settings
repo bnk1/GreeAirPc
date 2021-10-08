@@ -3,16 +3,19 @@
   <Profiles />
   <Settings>
     <Setting Name="Name" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Name</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ID" Type="System.String" Scope="User">
-      <Value Profile="(Default)">ID</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="PrivateKey" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Key</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="IP" Type="System.String" Scope="User">
-      <Value Profile="(Default)">IP</Value>
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NetMask" Type="System.String" Scope="User">
+      <Value Profile="(Default)">10.0.0.255</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -25,7 +25,7 @@ namespace GreeAirPC.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Name")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string Name {
             get {
                 return ((string)(this["Name"]));
@@ -37,7 +37,7 @@ namespace GreeAirPC.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("ID")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ID {
             get {
                 return ((string)(this["ID"]));
@@ -49,7 +49,7 @@ namespace GreeAirPC.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Key")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string PrivateKey {
             get {
                 return ((string)(this["PrivateKey"]));
@@ -61,13 +61,25 @@ namespace GreeAirPC.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("IP")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string IP {
             get {
                 return ((string)(this["IP"]));
             }
             set {
                 this["IP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10.0.0.255")]
+        public string NetMask {
+            get {
+                return ((string)(this["NetMask"]));
+            }
+            set {
+                this["NetMask"] = value;
             }
         }
     }
