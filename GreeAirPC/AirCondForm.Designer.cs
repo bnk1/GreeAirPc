@@ -39,7 +39,7 @@
 			this.privateKeyDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.DgvUnitsBinding = new System.Windows.Forms.BindingSource(this.components);
 			this.Ds1 = new GreeAirPC.AirCondDs();
-			this.Tb1 = new System.Windows.Forms.TextBox();
+			this.ValueTb = new System.Windows.Forms.TextBox();
 			this.CmdTb = new System.Windows.Forms.TextBox();
 			this.SendCmdB = new System.Windows.Forms.Button();
 			this.LogTb = new System.Windows.Forms.RichTextBox();
@@ -89,6 +89,7 @@
 			this.MnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.flowLayoutPanel8 = new System.Windows.Forms.FlowLayoutPanel();
 			this.flowLayoutPanel9 = new System.Windows.Forms.FlowLayoutPanel();
+			this.ModeClb = new System.Windows.Forms.CheckedListBox();
 			this.airCondDs = new GreeAirPC.AirCondDs();
 			this.cmdNamesBindingSource = new System.Windows.Forms.BindingSource(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.DgvUnits)).BeginInit();
@@ -122,7 +123,7 @@
 			this.ScanB.TabIndex = 0;
 			this.ScanB.Text = "Scan";
 			this.ScanB.UseVisualStyleBackColor = true;
-			this.ScanB.Click += new System.EventHandler(this.DiscoverButton_Click);
+			this.ScanB.Click += new System.EventHandler(this.DiscoverButton_ClickAsync);
 			// 
 			// DgvUnits
 			// 
@@ -206,13 +207,13 @@
 			this.Ds1.DataSetName = "AirCondDs";
 			this.Ds1.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
 			// 
-			// Tb1
+			// ValueTb
 			// 
-			this.Tb1.Location = new System.Drawing.Point(94, 28);
-			this.Tb1.Name = "Tb1";
-			this.Tb1.Size = new System.Drawing.Size(100, 20);
-			this.Tb1.TabIndex = 4;
-			this.Tb1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Tb1_KeyPress);
+			this.ValueTb.Location = new System.Drawing.Point(94, 28);
+			this.ValueTb.Name = "ValueTb";
+			this.ValueTb.Size = new System.Drawing.Size(100, 20);
+			this.ValueTb.TabIndex = 4;
+			this.ValueTb.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ValueTb_KeyPress);
 			// 
 			// CmdTb
 			// 
@@ -237,7 +238,7 @@
 			this.LogTb.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.LogTb.Location = new System.Drawing.Point(0, 635);
 			this.LogTb.Name = "LogTb";
-			this.LogTb.Size = new System.Drawing.Size(1098, 127);
+			this.LogTb.Size = new System.Drawing.Size(1316, 127);
 			this.LogTb.TabIndex = 7;
 			this.LogTb.Text = "";
 			// 
@@ -346,7 +347,7 @@
 			this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 542);
 			this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-			this.flowLayoutPanel2.Size = new System.Drawing.Size(1098, 93);
+			this.flowLayoutPanel2.Size = new System.Drawing.Size(1316, 93);
 			this.flowLayoutPanel2.TabIndex = 17;
 			// 
 			// flowLayoutPanel7
@@ -411,7 +412,7 @@
 			this.OptionsClb.Name = "OptionsClb";
 			this.OptionsClb.Size = new System.Drawing.Size(167, 212);
 			this.OptionsClb.TabIndex = 28;
-			this.OptionsClb.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox1_ItemCheck);
+			this.OptionsClb.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OptionsClb_ItemCheck);
 			// 
 			// TempUpDown
 			// 
@@ -476,7 +477,7 @@
 			this.dataGridView1.Name = "dataGridView1";
 			this.dataGridView1.ReadOnly = true;
 			this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dataGridView1.Size = new System.Drawing.Size(1098, 148);
+			this.dataGridView1.Size = new System.Drawing.Size(1316, 148);
 			this.dataGridView1.TabIndex = 31;
 			// 
 			// powerDataGridViewTextBoxColumn
@@ -690,7 +691,7 @@
 			this.panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.panel3.Controls.Add(this.label1);
 			this.panel3.Controls.Add(this.SendCmdB);
-			this.panel3.Controls.Add(this.Tb1);
+			this.panel3.Controls.Add(this.ValueTb);
 			this.panel3.Controls.Add(this.label2);
 			this.panel3.Controls.Add(this.CmdTb);
 			this.panel3.Location = new System.Drawing.Point(3, 72);
@@ -702,7 +703,7 @@
 			// 
 			this.statusStrip1.Location = new System.Drawing.Point(0, 762);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(1098, 22);
+			this.statusStrip1.Size = new System.Drawing.Size(1316, 22);
 			this.statusStrip1.TabIndex = 38;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
@@ -712,7 +713,7 @@
             this.MnuAbout});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(1098, 24);
+			this.menuStrip1.Size = new System.Drawing.Size(1316, 24);
 			this.menuStrip1.TabIndex = 39;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -732,10 +733,11 @@
 			this.flowLayoutPanel8.Controls.Add(this.flowLayoutPanel9);
 			this.flowLayoutPanel8.Controls.Add(this.OptionsClb);
 			this.flowLayoutPanel8.Controls.Add(this.DgvCmds);
+			this.flowLayoutPanel8.Controls.Add(this.ModeClb);
 			this.flowLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Top;
 			this.flowLayoutPanel8.Location = new System.Drawing.Point(0, 24);
 			this.flowLayoutPanel8.Name = "flowLayoutPanel8";
-			this.flowLayoutPanel8.Size = new System.Drawing.Size(1098, 368);
+			this.flowLayoutPanel8.Size = new System.Drawing.Size(1316, 368);
 			this.flowLayoutPanel8.TabIndex = 40;
 			// 
 			// flowLayoutPanel9
@@ -749,6 +751,25 @@
 			this.flowLayoutPanel9.Name = "flowLayoutPanel9";
 			this.flowLayoutPanel9.Size = new System.Drawing.Size(296, 126);
 			this.flowLayoutPanel9.TabIndex = 38;
+			// 
+			// ModeClb
+			// 
+			this.ModeClb.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.ModeClb.CheckOnClick = true;
+			this.ModeClb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.ModeClb.FormattingEnabled = true;
+			this.ModeClb.Items.AddRange(new object[] {
+            "Auto",
+            "Cool",
+            "Dry",
+            "Air",
+            "Heat"});
+			this.ModeClb.Location = new System.Drawing.Point(841, 3);
+			this.ModeClb.Name = "ModeClb";
+			this.ModeClb.Size = new System.Drawing.Size(167, 107);
+			this.ModeClb.TabIndex = 39;
+			this.ModeClb.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.ModeCb_ItemCheck);
+			this.ModeClb.SelectedIndexChanged += new System.EventHandler(this.ModeClb_SelectedIndexChanged);
 			// 
 			// airCondDs
 			// 
@@ -765,7 +786,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.ClientSize = new System.Drawing.Size(1098, 784);
+			this.ClientSize = new System.Drawing.Size(1316, 784);
 			this.Controls.Add(this.dataGridView1);
 			this.Controls.Add(this.flowLayoutPanel3);
 			this.Controls.Add(this.flowLayoutPanel2);
@@ -822,7 +843,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn iPDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn privateKeyDataGridViewTextBoxColumn;
-        private System.Windows.Forms.TextBox Tb1;
+        private System.Windows.Forms.TextBox ValueTb;
         private System.Windows.Forms.TextBox CmdTb;
         private System.Windows.Forms.Button SendCmdB;
         private System.Windows.Forms.RichTextBox LogTb;
@@ -874,6 +895,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn iDDataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn quietDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn tempUnitsCFDataGridViewTextBoxColumn;
-    }
+		private System.Windows.Forms.CheckedListBox ModeClb;
+	}
 }
 

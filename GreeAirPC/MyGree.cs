@@ -1,71 +1,86 @@
 ﻿using GreeAirPC.Database;
+using GreeAirPC.Gree;
 using GreeAirPC.Properties;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GreeAirPC
 {
     public static class MyGree
     {
-        public static Dictionary<string, string> CmdToNameDic = new Dictionary<string, string>
+        static void SaveDeviceAsDefault(AirCondModel model)
         {
-            { "Pow",        "Power"},
-            { "Tur",        "Turbo"},
-            { "SvSt",       "Energy Saver"},
-            { "Mod",        "Mode"},
-            { "WdSpd",      "Fan Speed"},
-            { "Air",        "External Air"},
-            { "Blo",        "X-Fan"},
-            { "Health",     "Health"},
-            { "SwhSlp",     "Sleep"},
-            { "Lig",        "Light"},
-            { "SwUpDn",     "Swip Up Down"},    // Vertical swing
-            { "SetTem",     "Temperature"},
-            { "Quiet",      "Quiet"},
-            { "TemUn",      "Temp Units C/F"}
-        };
-
-        public static Dictionary<string, string> NameToCmdDic = new Dictionary<string, string>
-        {
-            { "Power"          , "Pow"        },
-            { "Turbo"          , "Tur"        },
-            { "Energy Saver"   , "SvSt"       },
-            { "Mode"           , "Mod"        },
-            { "Fan Speed"      , "WdSpd"      },
-            { "External Air"   , "Air"        },
-            { "X-Fan"          , "Blo"        },
-            { "Health"         , "Health"     },
-            { "Sleep"          , "SwhSlp"     },
-            { "Light"          , "Lig"        },
-            { "Swip Up Down"   , "SwUpDn"     },    // Vertical swing
-            { "Temperature"    , "SetTem"     },
-            { "Quiet"          , "Quiet"      },
-            { "Temp Units C/F" , "TemUn"      }
-        };
-
-        public static AirCondModel GetDefault()
-        {
-            if (string.IsNullOrEmpty(Settings.Default.ID) || (Settings.Default.ID == "ID") || string.IsNullOrEmpty(Settings.Default.IP))
-                throw new Exception("Null default");
-
-            AirCondModel model = new AirCondModel(Settings.Default.ID, Settings.Default.Name, Settings.Default.PrivateKey, Settings.Default.IP);
-
-            return model;
+            Settings.Default.Name = model.Name;
+            Settings.Default.ID = model.ID;
+            Settings.Default.PrivateKey = model.PrivateKey;
+            Settings.Default.IP = model.Address;
+            Settings.Default.Save();
         }
 
-
-        public static async Task<List<AirCondModel>> DiscoverDevices(string netMask)
+        static async Task<List<AirCondModel>> DiscoverAsync(string netMask)
         {
-            List<AirCondModel> foundUnits = new List<Database.AirCondModel>();
+            return await Controller.DiscoverDevices(netMask);
+        }
 
-            var results = await Gree.Scanner.Scan(netMask);
+        public static async Task<AirCondModel> GetDefault(bool forceDiscover = false)
+        {
+            var ID = Settings.Default.ID;
 
-            foundUnits.AddRange(results);
+            if (!forceDiscover && !string.IsNullOrEmpty(ID) && !string.IsNullOrEmpty(Settings.Default.IP))
+                return new AirCondModel(Settings.Default.ID, Settings.Default.Name, Settings.Default.PrivateKey, Settings.Default.IP);
 
-            return foundUnits;
+            return await DicoverDefaultAsync();
+        }
+
+        public static async Task<AirCondModel> DicoverDefaultAsync()
+        {
+            var ID = Settings.Default.ID;
+
+            List<AirCondModel> units = await DiscoverAsync(Settings.Default.NetMask);
+
+            if (units.Count <= 0)
+                throw new Exception("No units found");
+
+			AirCondModel device = null;
+
+            if (!string.IsNullOrEmpty(ID))
+            {
+                foreach (AirCondModel x in units)
+                {
+                    if (x.ID == ID)
+                    {
+                        device = x;
+                        break;
+                    }
+                }
+            }
+
+            if (device == null) //  || (ID == "ID") || string.IsNullOrEmpty(Settings.Default.IP))
+            {
+                device = units[0];
+                SaveDeviceAsDefault(device);
+            }
+
+            if (device.Name != Settings.Default.Name)
+            {
+                Settings.Default.IP = device.Address;
+                Settings.Default.Save();
+            }
+
+            if (device.Address != Settings.Default.IP)
+            {
+                Settings.Default.IP = device.Address;
+                Settings.Default.Save();
+            }
+
+            if (device.PrivateKey != Settings.Default.PrivateKey)
+            {
+                Settings.Default.PrivateKey = device.PrivateKey;
+                Settings.Default.Save();
+            }
+
+            return device; //new AirCondModel(ID, Settings.Default.Name, Settings.Default.PrivateKey, Settings.Default.IP);
         }
     }
 }

@@ -40,12 +40,24 @@ namespace GreeAirPC.Gree
 
         public Dictionary<string, int> Parameters { get; private set; }
 
-        public async Task UpdateDeviceStatus()
+        void ThrowExc(string msg)
+		{
+            this.log.LogWarning(msg);
+            throw new Exception(msg);
+        }
+
+        void ThrowExc(Exception exc, string msg)
+        {
+            this.log.LogWarning(exc.Message);
+            this.log.LogWarning(msg);
+            throw new Exception(msg);
+        }
+
+        public async Task<bool> UpdateDeviceStatus()
         {
             this.log.LogDebug("Updating device status");
 
-            var columns = typeof(DeviceParameterKeys).GetFields().Where((f) => f.FieldType == typeof(string)).Select((f) => f.GetValue(null) as string).ToList();
-
+            var columns = DevParam.DescToParam.Select(x => x.Value).ToList();
             var pack = DeviceStatusRequestPack.Create(this.model.ID, columns);
             var json = JsonConvert.SerializeObject(pack);
 
@@ -53,8 +65,8 @@ namespace GreeAirPC.Gree
 
             if (encrypted == null)
             {
-                this.log.LogWarning("Failed to encrypt DeviceStatusRequestPack");
-                return;
+                ThrowExc("Failed to encrypt DeviceStatusRequestPack");
+                return false;
             }
 
             var request = Request.Create(this.model.ID, encrypted);
@@ -67,24 +79,24 @@ namespace GreeAirPC.Gree
             }
             catch (Exception e)
             {
-                this.log.LogWarning($"Failed to send DeviceStatusRequestPack. Error: {e.Message}");
-                return;
+                ThrowExc($"Failed to send DeviceStatusRequestPack. Error: {e.Message}");
+                return false;
             }
 
             json = Crypto.DecryptData(response.Pack, this.model.PrivateKey);
 
             if (json == null)
             {
-                this.log.LogWarning("Failed to decrypt DeviceStatusResponsePack");
-                return;
+                ThrowExc("Failed to decrypt DeviceStatusResponsePack");
+                return false;
             }
 
             var responsePack = JsonConvert.DeserializeObject<DeviceStatusResponsePack>(json);
 
             if (responsePack == null)
             {
-                this.log.LogWarning("Failed to deserialize DeviceStatusReponsePack");
-                return;
+                ThrowExc("Failed to deserialize DeviceStatusReponsePack");
+                return false;
             }
 
             var updatedParameters = responsePack.Columns.Zip(responsePack.Values, (k, v) => new { k, v }).ToDictionary(x => x.k, x => x.v);
@@ -97,29 +109,38 @@ namespace GreeAirPC.Gree
                 this.Parameters = updatedParameters;
                 this.DeviceStatusChanged?.Invoke(this, new DeviceStatusChangedEventArgs() { Parameters = updatedParameters });
             }
+
+            return true;
         }
 
         public async Task SetDeviceParameter(string name, int value)
         {
+            try
+			{
+                name = DevParam.DescToParam[name];  // Parsing of command name from a description
+            }
+            catch
+			{
+                // Use the name as the command name
+			}
+
             this.log.LogDebug($"Setting parameter: {name}={value}");
 
-            var pack = CommandRequestPack.Create(
-                this.DeviceID,
-                new List<string>() { name },
-                new List<int>() { value });
-
+            var pack = CommandRequestPack.Create(this.DeviceID, new List<string>() { name }, new List<int>() { value });
             var json = JsonConvert.SerializeObject(pack);
             var request = Request.Create(this.DeviceID, Crypto.EncryptData(json, this.model.PrivateKey));
 
             ResponsePackInfo response;
+
             try
             {
                 response = await this.SendDeviceRequest(request);
             }
             catch (System.IO.IOException e)
             {
-                this.log.LogWarning($"Failed to send CommandRequestPack: {e.Message}");
-                return;
+                string msg = $"Failed to send CommandRequestPack: {e.Message}";
+                this.log.LogWarning(msg);
+                throw new Exception(msg);
             }
 
             json = Crypto.DecryptData(response.Pack, this.model.PrivateKey);
@@ -143,11 +164,13 @@ namespace GreeAirPC.Gree
             this.log.LogDebug($"Sending device request");
 
             var datagram = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(request));
+
             this.log.LogDebug($"{datagram.Length} bytes will be sent");
 
             using (var udp = new UdpClient())
             {
                 var sent = await udp.SendAsync(datagram, datagram.Length, this.model.Address, 7000);
+
                 this.log.LogDebug($"{sent} bytes sent to {this.model.Address}");
 
                 for (int i = 0; i < 20; ++i)
@@ -155,6 +178,7 @@ namespace GreeAirPC.Gree
                     if (udp.Available > 0)
                     {
                         var results = await udp.ReceiveAsync();
+
                         this.log.LogDebug($"Got response, {results.Buffer.Length} bytes");
 
                         var json = Encoding.ASCII.GetString(results.Buffer);
@@ -170,6 +194,53 @@ namespace GreeAirPC.Gree
 
                 throw new System.IO.IOException("Device request timed out");
             }
+        }
+
+        public static async Task<List<AirCondModel>> DiscoverDevices(string netMask)
+        {
+            List<AirCondModel> foundUnits = new List<Database.AirCondModel>();
+
+            var results = await Gree.Scanner.Scan(netMask);
+
+            foundUnits.AddRange(results);
+
+            return foundUnits;
+        }
+
+        public async Task SetParamByName(string name, int value)
+        {
+			await SetDeviceParameter(name, value);
+        }
+
+        public async Task SetParamByName(string name, bool check)
+        {
+            var cmd = DevParam.DescToParam[name];
+            int value = check ? ((name == "Quiet") ? 2 : 1) : 0;
+
+            await SetParamByName(name, value);
+        }
+
+        public async Task SetParamByName(string name, string value)
+        {
+            if (name.ToLower() == DevParam.Description.Mode.ToLower())
+                await SetMode(value);
+            else
+                await SetParamByName(name, int.Parse(value));
+        }
+
+        public async Task SetMode(string mode)
+        {
+            await SetParamByName(DevParam.Description.Mode, DevParam.ModeNameToIdx[mode]);
+        }
+
+        public async Task SetTemp(int value)
+        {
+            await SetParamByName(DevParam.Description.SetTemperature, value);
+        }
+
+        public async Task SetFan(int value)
+        {
+            await SetParamByName(DevParam.Description.FanSpeed, value);
         }
     }
 }

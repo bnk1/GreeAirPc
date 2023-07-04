@@ -12,7 +12,7 @@
   <xs:element name="AirCondDs" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="AirCondDs" msprop:Generator_UserDSName="AirCondDs">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="Devices" msprop:Generator_TableClassName="DevicesDataTable" msprop:Generator_TableVarName="tableDevices" msprop:Generator_TablePropName="Devices" msprop:Generator_RowDeletingName="DevicesRowDeleting" msprop:Generator_RowChangingName="DevicesRowChanging" msprop:Generator_RowEvHandlerName="DevicesRowChangeEventHandler" msprop:Generator_RowDeletedName="DevicesRowDeleted" msprop:Generator_UserTableName="Devices" msprop:Generator_RowChangedName="DevicesRowChanged" msprop:Generator_RowEvArgName="DevicesRowChangeEvent" msprop:Generator_RowClassName="DevicesRow">
+        <xs:element name="Devices" msprop:Generator_TableClassName="DevicesDataTable" msprop:Generator_TableVarName="tableDevices" msprop:Generator_RowChangedName="DevicesRowChanged" msprop:Generator_TablePropName="Devices" msprop:Generator_RowDeletingName="DevicesRowDeleting" msprop:Generator_RowChangingName="DevicesRowChanging" msprop:Generator_RowEvHandlerName="DevicesRowChangeEventHandler" msprop:Generator_RowDeletedName="DevicesRowDeleted" msprop:Generator_RowClassName="DevicesRow" msprop:Generator_UserTableName="Devices" msprop:Generator_RowEvArgName="DevicesRowChangeEvent">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Name" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnPropNameInTable="NameColumn" msprop:Generator_UserColumnName="Name" type="xs:string" default="" />
@@ -22,7 +22,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Cmds" msprop:Generator_TableClassName="CmdsDataTable" msprop:Generator_TableVarName="tableCmds" msprop:Generator_RowChangedName="CmdsRowChanged" msprop:Generator_TablePropName="Cmds" msprop:Generator_RowDeletingName="CmdsRowDeleting" msprop:Generator_RowChangingName="CmdsRowChanging" msprop:Generator_RowEvHandlerName="CmdsRowChangeEventHandler" msprop:Generator_RowDeletedName="CmdsRowDeleted" msprop:Generator_RowClassName="CmdsRow" msprop:Generator_UserTableName="Cmds" msprop:Generator_RowEvArgName="CmdsRowChangeEvent">
+        <xs:element name="Cmds" msprop:Generator_TableClassName="CmdsDataTable" msprop:Generator_TableVarName="tableCmds" msprop:Generator_TablePropName="Cmds" msprop:Generator_RowDeletingName="CmdsRowDeleting" msprop:Generator_RowChangingName="CmdsRowChanging" msprop:Generator_RowEvHandlerName="CmdsRowChangeEventHandler" msprop:Generator_RowDeletedName="CmdsRowDeleted" msprop:Generator_UserTableName="Cmds" msprop:Generator_RowChangedName="CmdsRowChanged" msprop:Generator_RowEvArgName="CmdsRowChangeEvent" msprop:Generator_RowClassName="CmdsRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Name" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnPropNameInTable="NameColumn" msprop:Generator_UserColumnName="Name" type="xs:string" minOccurs="0" />
@@ -30,7 +30,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Status" msprop:Generator_TableClassName="StatusDataTable" msprop:Generator_TableVarName="tableStatus" msprop:Generator_TablePropName="Status" msprop:Generator_RowDeletingName="StatusRowDeleting" msprop:Generator_RowChangingName="StatusRowChanging" msprop:Generator_RowEvHandlerName="StatusRowChangeEventHandler" msprop:Generator_RowDeletedName="StatusRowDeleted" msprop:Generator_UserTableName="Status" msprop:Generator_RowChangedName="StatusRowChanged" msprop:Generator_RowEvArgName="StatusRowChangeEvent" msprop:Generator_RowClassName="StatusRow">
+        <xs:element name="Status" msprop:Generator_TableClassName="StatusDataTable" msprop:Generator_TableVarName="tableStatus" msprop:Generator_RowChangedName="StatusRowChanged" msprop:Generator_TablePropName="Status" msprop:Generator_RowDeletingName="StatusRowDeleting" msprop:Generator_RowChangingName="StatusRowChanging" msprop:Generator_RowEvHandlerName="StatusRowChangeEventHandler" msprop:Generator_RowDeletedName="StatusRowDeleted" msprop:Generator_RowClassName="StatusRow" msprop:Generator_UserTableName="Status" msprop:Generator_RowEvArgName="StatusRowChangeEvent">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Power" msdata:Caption="DataColumn1" msprop:Generator_ColumnVarNameInTable="columnPower" msprop:Generator_ColumnPropNameInRow="Power" msprop:Generator_ColumnPropNameInTable="PowerColumn" msprop:Generator_UserColumnName="Power" type="xs:string" default="Null" minOccurs="0" />
@@ -51,7 +51,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="CmdNames" msprop:Generator_TableClassName="CmdNamesDataTable" msprop:Generator_TableVarName="tableCmdNames" msprop:Generator_RowChangedName="CmdNamesRowChanged" msprop:Generator_TablePropName="CmdNames" msprop:Generator_RowDeletingName="CmdNamesRowDeleting" msprop:Generator_RowChangingName="CmdNamesRowChanging" msprop:Generator_RowEvHandlerName="CmdNamesRowChangeEventHandler" msprop:Generator_RowDeletedName="CmdNamesRowDeleted" msprop:Generator_RowClassName="CmdNamesRow" msprop:Generator_UserTableName="CmdNames" msprop:Generator_RowEvArgName="CmdNamesRowChangeEvent">
+        <xs:element name="CmdNames" msprop:Generator_TableClassName="CmdNamesDataTable" msprop:Generator_TableVarName="tableCmdNames" msprop:Generator_TablePropName="CmdNames" msprop:Generator_RowDeletingName="CmdNamesRowDeleting" msprop:Generator_RowChangingName="CmdNamesRowChanging" msprop:Generator_RowEvHandlerName="CmdNamesRowChangeEventHandler" msprop:Generator_RowDeletedName="CmdNamesRowDeleted" msprop:Generator_UserTableName="CmdNames" msprop:Generator_RowChangedName="CmdNamesRowChanged" msprop:Generator_RowEvArgName="CmdNamesRowChangeEvent" msprop:Generator_RowClassName="CmdNamesRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Pow" msdata:Caption="DataColumn1" msprop:Generator_ColumnVarNameInTable="columnPow" msprop:Generator_ColumnPropNameInRow="Pow" msprop:Generator_ColumnPropNameInTable="PowColumn" msprop:Generator_UserColumnName="Pow" type="xs:string" default="Null" minOccurs="0" />
@@ -72,6 +72,14 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="Modes" msprop:Generator_TableClassName="ModesDataTable" msprop:Generator_TableVarName="tableModes" msprop:Generator_TablePropName="Modes" msprop:Generator_RowDeletingName="ModesRowDeleting" msprop:Generator_RowChangingName="ModesRowChanging" msprop:Generator_RowEvHandlerName="ModesRowChangeEventHandler" msprop:Generator_RowDeletedName="ModesRowDeleted" msprop:Generator_UserTableName="Modes" msprop:Generator_RowChangedName="ModesRowChanged" msprop:Generator_RowEvArgName="ModesRowChangeEvent" msprop:Generator_RowClassName="ModesRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Index" msprop:Generator_ColumnVarNameInTable="columnIndex" msprop:Generator_ColumnPropNameInRow="Index" msprop:Generator_ColumnPropNameInTable="IndexColumn" msprop:Generator_UserColumnName="Index" type="xs:int" minOccurs="0" />
+              <xs:element name="Name" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnPropNameInTable="NameColumn" msprop:Generator_UserColumnName="Name" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:choice>
     </xs:complexType>
     <xs:unique name="Constraint1" msdata:PrimaryKey="true">
@@ -89,11 +97,11 @@
   </xs:element>
   <xs:annotation>
     <xs:appinfo>
-      <msdata:Relationship name="Devices_Status" msdata:parent="Devices" msdata:child="Status" msdata:parentkey="ID" msdata:childkey="ID" msprop:Generator_UserChildTable="Status" msprop:Generator_ChildPropName="GetStatusRows" msprop:Generator_UserRelationName="Devices_Status" msprop:Generator_ParentPropName="DevicesRow" msprop:Generator_RelationVarName="relationDevices_Status" msprop:Generator_UserParentTable="Devices" />
-      <msdata:Relationship name="Status_CmdNames" msdata:parent="Status" msdata:child="CmdNames" msdata:parentkey="Power" msdata:childkey="Pow" msprop:Generator_UserChildTable="CmdNames" msprop:Generator_ChildPropName="GetCmdNamesRowsByStatus_CmdNames" msprop:Generator_UserRelationName="Status_CmdNames" msprop:Generator_RelationVarName="relationStatus_CmdNames" msprop:Generator_UserParentTable="Status" msprop:Generator_ParentPropName="StatusRowByStatus_CmdNames" />
-      <msdata:Relationship name="Status_CmdNames1" msdata:parent="Status" msdata:child="CmdNames" msdata:parentkey="Turbo" msdata:childkey="Tur" msprop:Generator_UserChildTable="CmdNames" msprop:Generator_ChildPropName="GetCmdNamesRowsByStatus_CmdNames1" msprop:Generator_UserRelationName="Status_CmdNames1" msprop:Generator_RelationVarName="relationStatus_CmdNames1" msprop:Generator_UserParentTable="Status" msprop:Generator_ParentPropName="StatusRowByStatus_CmdNames1" />
-      <msdata:Relationship name="Status_CmdNames2" msdata:parent="Status" msdata:child="CmdNames" msdata:parentkey="Energy_x0020_Saver" msdata:childkey="SvSt" msprop:Generator_UserChildTable="CmdNames" msprop:Generator_ChildPropName="GetCmdNamesRowsByStatus_CmdNames2" msprop:Generator_UserRelationName="Status_CmdNames2" msprop:Generator_RelationVarName="relationStatus_CmdNames2" msprop:Generator_UserParentTable="Status" msprop:Generator_ParentPropName="StatusRowByStatus_CmdNames2" />
-      <msdata:Relationship name="Status_CmdNames3" msdata:parent="Status" msdata:child="CmdNames" msdata:parentkey="Mode" msdata:childkey="Mod" msprop:Generator_UserChildTable="CmdNames" msprop:Generator_ChildPropName="GetCmdNamesRowsByStatus_CmdNames3" msprop:Generator_UserRelationName="Status_CmdNames3" msprop:Generator_RelationVarName="relationStatus_CmdNames3" msprop:Generator_UserParentTable="Status" msprop:Generator_ParentPropName="StatusRowByStatus_CmdNames3" />
+      <msdata:Relationship name="Devices_Status" msdata:parent="Devices" msdata:child="Status" msdata:parentkey="ID" msdata:childkey="ID" msprop:Generator_UserChildTable="Status" msprop:Generator_ChildPropName="GetStatusRows" msprop:Generator_UserRelationName="Devices_Status" msprop:Generator_RelationVarName="relationDevices_Status" msprop:Generator_UserParentTable="Devices" msprop:Generator_ParentPropName="DevicesRow" />
+      <msdata:Relationship name="Status_CmdNames" msdata:parent="Status" msdata:child="CmdNames" msdata:parentkey="Power" msdata:childkey="Pow" msprop:Generator_UserChildTable="CmdNames" msprop:Generator_ChildPropName="GetCmdNamesRowsByStatus_CmdNames" msprop:Generator_UserRelationName="Status_CmdNames" msprop:Generator_ParentPropName="StatusRowByStatus_CmdNames" msprop:Generator_RelationVarName="relationStatus_CmdNames" msprop:Generator_UserParentTable="Status" />
+      <msdata:Relationship name="Status_CmdNames1" msdata:parent="Status" msdata:child="CmdNames" msdata:parentkey="Turbo" msdata:childkey="Tur" msprop:Generator_UserChildTable="CmdNames" msprop:Generator_ChildPropName="GetCmdNamesRowsByStatus_CmdNames1" msprop:Generator_UserRelationName="Status_CmdNames1" msprop:Generator_ParentPropName="StatusRowByStatus_CmdNames1" msprop:Generator_RelationVarName="relationStatus_CmdNames1" msprop:Generator_UserParentTable="Status" />
+      <msdata:Relationship name="Status_CmdNames2" msdata:parent="Status" msdata:child="CmdNames" msdata:parentkey="Energy_x0020_Saver" msdata:childkey="SvSt" msprop:Generator_UserChildTable="CmdNames" msprop:Generator_ChildPropName="GetCmdNamesRowsByStatus_CmdNames2" msprop:Generator_UserRelationName="Status_CmdNames2" msprop:Generator_ParentPropName="StatusRowByStatus_CmdNames2" msprop:Generator_RelationVarName="relationStatus_CmdNames2" msprop:Generator_UserParentTable="Status" />
+      <msdata:Relationship name="Status_CmdNames3" msdata:parent="Status" msdata:child="CmdNames" msdata:parentkey="Mode" msdata:childkey="Mod" msprop:Generator_UserChildTable="CmdNames" msprop:Generator_ChildPropName="GetCmdNamesRowsByStatus_CmdNames3" msprop:Generator_UserRelationName="Status_CmdNames3" msprop:Generator_ParentPropName="StatusRowByStatus_CmdNames3" msprop:Generator_RelationVarName="relationStatus_CmdNames3" msprop:Generator_UserParentTable="Status" />
     </xs:appinfo>
   </xs:annotation>
 </xs:schema>

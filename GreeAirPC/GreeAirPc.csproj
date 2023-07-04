@@ -14,6 +14,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,9 +25,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -54,6 +54,16 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>snow_blue.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'CmdLine|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\CmdLine\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.DotNet.PlatformAbstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
@@ -164,11 +174,11 @@
     <Compile Include="AirCondForm.Designer.cs">
       <DependentUpon>AirCondForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GreeCmd.cs" />
+    <Compile Include="GreeCmdLine.cs" />
     <Compile Include="Gree\Controller.cs" />
     <Compile Include="Gree\Crypto.cs" />
     <Compile Include="Gree\DeviceDiscoveryResponse.cs" />
-    <Compile Include="Gree\DeviceParameterKeys.cs" />
+    <Compile Include="Gree\DevParam.cs" />
     <Compile Include="Gree\DeviceStatusChangedEventArgs.cs" />
     <Compile Include="Gree\Protocol\BindRequestPack.cs" />
     <Compile Include="Gree\Protocol\BindResponsePack.cs" />
@@ -243,7 +253,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="snow_blue.ico" />
+    <Content Include="snow_blue.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />

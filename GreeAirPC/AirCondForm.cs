@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GreeAirPC.Database;
 using GreeAirPC.Properties;
+using GreeAirPC.Gree;
 
 namespace GreeAirPC
 {
@@ -20,24 +21,42 @@ namespace GreeAirPC
     {
         List<Gree.Controller> Ctrls = new List<Gree.Controller>();
 
+        Gree.Controller CurrentCtrl
+        {
+            get
+            {
+                Gree.Controller ctrl = Ctrls[DgvUnits.SelectedRows[DgvUnits.SelectedRows.Count - 1].Index];
+
+                return ctrl;
+            }
+        }
+
         public AirCondForm()
         {
             InitializeComponent();
 
             LogTb.HideSelection = false;//Hide selection so that AppendText will auto scroll to the end
 
-            foreach (var x in MyGree.CmdToNameDic)
+            foreach (var x in DevParam.ParamToDesc)
                 Ds1.Cmds.Rows.Add(x.Key, x.Value);
+
+            foreach (var x in DevParam.ModeIdxToName)
+                Ds1.Modes.Rows.Add(x.Key, x.Value);
 
             LoadDefault();
         }
 
-        void LoadDefault()
+        async void LoadDefault()
         {
             try
             {
-                if (!string.IsNullOrEmpty(Settings.Default.NetMask))
-                    NetMaskTb.Text = Settings.Default.NetMask;
+                if (string.IsNullOrEmpty(Settings.Default.NetMask))
+				{
+                    Settings.Default.NetMask = "10.0.0.255";
+                    Settings.Default.Save();
+                }
+
+                NetMaskTb.Text = Settings.Default.NetMask;
             }
             catch
             {
@@ -45,10 +64,8 @@ namespace GreeAirPC
 
             try
             {
-                List<AirCondModel> units = new List<AirCondModel>();
-                units.Add(MyGree.GetDefault());
-                AddUnits(units);
-                _ = GetCurrentCtrl().UpdateDeviceStatus();
+                await ScanAsync(NetMaskTb.Text);
+                await CurrentCtrl.UpdateDeviceStatus();
             }
             catch
             {
@@ -58,6 +75,11 @@ namespace GreeAirPC
 
         void AddUnits(List<AirCondModel> foundUnits)
         {
+            if (foundUnits.Count == 0)
+            {
+                AppendLine("No units found");
+                return;
+            }
             DgvUnitsBinding.SuspendBinding();
             Ds1.BeginInit();
             Ds1.Devices.Clear();
@@ -76,14 +98,7 @@ namespace GreeAirPC
             DgvUnits.Rows[0].Selected = true;
         }
 
-        Gree.Controller GetCurrentCtrl()
-        {
-            Gree.Controller ctrl = Ctrls[DgvUnits.SelectedRows[DgvUnits.SelectedRows.Count-1].Index];
-
-            return ctrl;
-        }
-
-        void Ctrl_DeviceStatusChanged(object sender, Gree.DeviceStatusChangedEventArgs e)
+		void Ctrl_DeviceStatusChanged(object sender, Gree.DeviceStatusChangedEventArgs e)
         {
             try
             {
@@ -104,29 +119,32 @@ namespace GreeAirPC
 
                 Ds1.Status.BeginInit();
 
-                foreach (var x in e.Parameters)
+                foreach (var item in e.Parameters)
                 {
-                    var name = MyGree.CmdToNameDic[x.Key];
+                    var name = DevParam.ParamToDesc[item.Key];
 
-                    Log("{0}: {1}, ", x.Key, x.Value);
+                    AppendText("{0}: {1}, ", item.Key, item.Value);
 
-                    statusRow[name] = x.Value;
+                    statusRow[name] = item.Value;
 
                     OptionsClb.SelectedItem = null; // Must be done to avoid re-check
 
                     if (OptionsClb.Items.Contains(name))
-                        OptionsClb.SetItemChecked(OptionsClb.Items.IndexOf(name), (x.Value > 0));
-                }
+                        OptionsClb.SetItemChecked(OptionsClb.Items.IndexOf(name), (item.Value > 0));
 
-                LogLine("");
+                    if (name == "Mode")
+                        ModeClb.SetItemChecked(item.Value, true);
+
+                    if (name == "Temperature")
+						SetTemperatureGui(item.Value);
+				}
+
+                AppendLine();
                 LogSep();
-
-                //StatusDgv.Refresh();
-                //StatusDgv.Update();
             }
             catch(Exception exc)
-            { 
-                LogLine(exc.Message);
+            {
+                Log(exc);
             }
             finally
             {
@@ -134,136 +152,80 @@ namespace GreeAirPC
             }
         }
 
-        async Task DiscoverAsync(string netMask)
+		private void SetTemperatureGui(Int32 value)
+		{
+			TempUpDown.ValueChanged -= TempUpDown_ValueChanged;
+			TempUpDown.Value = value;
+			TempUpDown.ValueChanged += TempUpDown_ValueChanged;
+		}
+
+		async Task DiscoverAsync(string netMask)
         {
             try
             {
-                List<AirCondModel> units = await MyGree.DiscoverDevices(netMask);
+                List<AirCondModel> units = await Controller.DiscoverDevices(netMask);
 
                 AddUnits(units);
             }
             catch (Exception exc)
             {
-                LogLine(exc.Message);
+                Log(exc);
             }
         }
 
-        void DiscoverButton_Click(object sender, EventArgs e)
-        {
+        async Task ScanAsync(string netMask)
+		{
             try
             {
-                _ = DiscoverAsync(NetMaskTb.Text);
+                await DiscoverAsync(netMask);
             }
-            catch 
+            catch
             {
-                LogLine("NetMask should be 192.168.1.255 or 10.0.0.255");
+                AppendLine("NetMask should be 192.168.1.255 or 10.0.0.255");
             }
         }
 
-        void SetParam(string cmd, int value)
+        void DiscoverButton_ClickAsync(object sender, EventArgs e)
+        {
+            _ = ScanAsync(NetMaskTb.Text);
+        }
+
+
+        async Task SendCmd()
         {
             try
             {
-                Gree.Controller ctrl = GetCurrentCtrl();
+                AppendLine("Send Cmd {0}={1}", CmdTb.Text, ValueTb.Text);
 
-                _ = ctrl.SetDeviceParameter(cmd, value);
+                int value = int.Parse(ValueTb.Text);
 
-                LogLine("Cmd: {0}  Value: {1}", cmd, value);
+                await CurrentCtrl.SetParamByName(CmdTb.Text, value);
             }
             catch (Exception exc)
             {
-                LogLine(exc.Message);
-            }
-        }
-
-        void SetParamByName(string name, int value)
-        {
-            var cmd = MyGree.NameToCmdDic[name];
-
-            SetParam(cmd, value);
-        }
-
-        void SetParamByName(string name, bool check)
-        {
-            try
-            {
-                var cmd = MyGree.NameToCmdDic[name];
-                int value = check ? ((name == "Quiet") ? 2 : 1) : 0;
-
-                SetParam(cmd, value);
-            }
-            catch (Exception exc)
-            {
-                LogLine(exc.Message);
-            }
-        }
-
-        void SetTemp(int value)
-        {
-            SetParamByName("Temperature", value);
-        }
-
-        void SetFan(int value)
-        {
-            SetParamByName("Fan Speed", value);
-        }
-
-        void SetParam(string cmd)
-        {
-            try
-            {
-                int value = int.Parse(Tb1.Text);
-
-                SetParam(cmd, value);
-            }
-            catch (Exception exc)
-            {
-                LogLine(exc.Message);
-            }
-        }
-
-        void SendCmd()
-        {
-            try
-            {
-                LogLine("Send {0}", CmdTb.Text);
-
-                SetParam(CmdTb.Text);
-            }
-            catch (Exception exc)
-            {
-                LogLine(exc.Message);
+                Log(exc);
             }
         }
 
         private void SendCmdB_Click(object sender, EventArgs e)
         {
-            SendCmd();
+			_ = SendCmd();
         }
 
-        void GetStatus()
+        async Task<bool> GetStatus()
         {
-            try
-            {
-                Gree.Controller ctrl = GetCurrentCtrl();
-
-                _ = ctrl.UpdateDeviceStatus();
-            }
-            catch
-            {
-
-            }
+            return await CurrentCtrl.UpdateDeviceStatus();
         }
 
         private void GetstatusB_Click(object sender, EventArgs e)
         {
-            GetStatus();
+            _ = GetStatus();
         }
 
         void SaveDeviceAsDefault(AirCondModel model)
         {
             LogSep();
-            LogLine("Saving Device as default: {0} {1} {2} {3}", model.Name, model.ID, model.PrivateKey, model.Address);
+            AppendLine("Saving Device as default: {0} {1} {2} {3}", model.Name, model.ID, model.PrivateKey, model.Address);
 
             Settings.Default.Name       = model.Name;
             Settings.Default.ID         = model.ID;
@@ -277,13 +239,13 @@ namespace GreeAirPC
         {
             try
             {
-                Gree.Controller ctrl = GetCurrentCtrl();
+                Gree.Controller ctrl = CurrentCtrl;
 
                 SaveDeviceAsDefault(ctrl.Model);
             }
             catch (Exception exc)
             {
-                LogLine(exc.Message);
+                Log(exc);
             }
         }
 
@@ -303,14 +265,24 @@ namespace GreeAirPC
 
         void LogSep()
         {
-            LogLine("------------------------------------------------");
+            AppendLine("------------------------------------------------");
         }
         
-        void LogLine(string text, params object[] args) => Log(text + "\n", args);
+        void AppendLine(string text = "", params object[] args) => AppendText(text + "\n", args);
 
-        void Log(string text, params object[] args)
+        void AppendText(string text, params object[] args)
         {
             LogTb.AppendText(string.Format(text, args));
+        }
+
+        void Log(Exception exc)
+        {
+            AppendLine(exc.Message);
+            AppendLine(exc.Source);
+            AppendLine(exc.StackTrace);
+
+            if (exc.InnerException != null)
+                Log(exc.InnerException);
         }
 
         private void DgvUnits_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
@@ -328,57 +300,73 @@ namespace GreeAirPC
             }
         }
 
-        private void Tb1_KeyPress(object sender, KeyPressEventArgs e)
+        private void ValueTb_KeyPress(object sender, KeyPressEventArgs e)
         {
             if ((Keys)e.KeyChar == Keys.Enter)
-                SendCmd();
+                _ = SendCmd();
         }
 
-        private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
+        private async Task SetCheckAsync(string name, CheckState value)
+		{
+            await CurrentCtrl.SetParamByName(name, value > 0);
+            await GetStatus();
+        }
+
+        private void OptionsClb_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             try
             {
-                if (OptionsClb.SelectedItem == null)
+                CheckedListBox cb = sender as CheckedListBox;
+
+                if (cb.SelectedItem == null)
                     return;
 
-                string name = OptionsClb.SelectedItem.ToString();
+                string name = cb.SelectedItem.ToString();
                 
                 if (string.IsNullOrEmpty(name))
                     return;
-                   
-                SetParamByName(name, e.NewValue > 0);
 
-                GetStatus();
+                _ = SetCheckAsync(name, e.NewValue);
             }
             catch (Exception exc)
             {
-                LogLine(exc.Message);
+                Log(exc);
             }
+        }
+
+        private async Task SetTemp(int value)
+		{
+            await CurrentCtrl.SetTemp(value);
+            await GetStatus();
         }
 
         private void TempUpDown_ValueChanged(object sender, EventArgs e)
         {
             try
             {
-                SetTemp((int)TempUpDown.Value);
-                GetStatus();
+                _ = SetTemp((int)TempUpDown.Value);
             }
             catch (Exception exc)
             {
-                LogLine(exc.Message);
+                Log(exc);
             }
+        }
+
+        private async Task SetFan(int value)
+        {
+            await CurrentCtrl.SetFan(value);
+            await GetStatus();
         }
 
         private void FanUpDown_ValueChanged(object sender, EventArgs e)
         {
             try
             {
-                SetFan((int)FanUpDown.Value);
-                GetStatus();
+                _ = SetFan((int)FanUpDown.Value);
             }
             catch (Exception exc)
             {
-                LogLine(exc.Message);
+                Log(exc);
             }
         }
 
@@ -395,5 +383,41 @@ namespace GreeAirPC
 
             }
         }
-    }
+
+		private void ModeCb_ItemCheck(Object sender, ItemCheckEventArgs e)
+		{
+            CheckedListBox cb = sender as CheckedListBox;
+
+            if (e.NewValue == CheckState.Checked && cb.CheckedItems.Count > 0)
+            {
+                cb.ItemCheck -= ModeCb_ItemCheck;
+                cb.SetItemChecked(cb.CheckedIndices[0], false);
+                cb.ItemCheck += ModeCb_ItemCheck;
+            }
+        }
+
+        private async Task SetMode(string value)
+        {
+            await CurrentCtrl.SetMode(value);
+            await GetStatus();
+        }
+
+        private void ModeClb_SelectedIndexChanged(Object sender, EventArgs e)
+		{
+            try
+            {
+                CheckedListBox cb = sender as CheckedListBox;
+                _ = SetMode(cb.SelectedItem.ToString());
+            }
+            catch
+			{
+
+			}
+        }
+
+		private void SetNetmask_Click(Object sender, EventArgs e)
+		{
+            NetMaskTb.Text = sender.ToString();
+		}
+	}
 }
